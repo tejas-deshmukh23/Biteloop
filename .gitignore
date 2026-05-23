@@ -1,0 +1,65 @@
+# ─────────────────────────────────────────────
+# Tiffin Platform — .gitignore
+# ─────────────────────────────────────────────
+
+# ── Maven build output ────────────────────────
+# Never commit compiled code — always recompile from source
+target/
+*.class
+*.jar
+*.war
+
+# ── IDE files ────────────────────────────────
+# IntelliJ — these are personal IDE settings, not project config
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse
+.eclipse/
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# ── Secrets and Environment ───────────────────
+# MOST IMPORTANT — never commit these
+# Anyone with these can access your DB, JWT, payments
+.env
+.env.local
+.env.production
+*.env
+
+# application-prod.yml — production secrets stay local
+application-prod.yml
+application-production.yml
+application-local.yml
+
+# ── OS generated files ────────────────────────
+.DS_Store         # Mac
+Thumbs.db         # Windows
+desktop.ini
+
+# ── Logs ─────────────────────────────────────
+logs/
+*.log
+*.log.*
+
+# ── Docker volumes (local data) ───────────────
+postgres-data/
+redis-data/
+
+# ── Node modules (for Next.js frontend later) ─
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Misc ─────────────────────────────────────
+*.tmp
+*.swp
