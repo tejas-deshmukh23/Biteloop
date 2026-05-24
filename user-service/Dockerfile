@@ -23,7 +23,11 @@ COPY user-service/src user-service/src
 #-am stands for: --also-make
 #Meaning: Also build dependencies required by this module.
 #-DskipTests : Skip test execution. Makes Docker build faster.
-RUN mvn clean install -pl common-lib -am -DskipTests
+#RUN mvn clean install -pl common-lib -am -DskipTests
+# -N = this pom only, no child modules
+RUN mvn install -N -DskipTests          
+# Step 1: Install common-lib into local Maven repo
+RUN mvn install -pl common-lib -DskipTests
 RUN mvn clean package -pl user-service -DskipTests
 
 #Difference between install and package that has used above =>

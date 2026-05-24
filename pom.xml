@@ -15,15 +15,15 @@
     <!-- All child modules -->
     <modules>
         <module>common-lib</module>
-        <module>api-gateway</module>
+       <!-- <module>api-gateway</module> -->
         <module>user-service</module>
-        <module>provider-service</module>
+<!--        <module>provider-service</module>
         <module>menu-service</module>
         <module>order-service</module>
         <module>subscription-service</module>
         <module>payment-service</module>
         <module>notification-service</module>
-        <module>admin-service</module>
+        <module>admin-service</module> -->
     </modules>
 
     <!-- Inherit Spring Boot defaults -->
@@ -77,10 +77,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-</dependency>
+        
     </dependencies>
 
 </project>

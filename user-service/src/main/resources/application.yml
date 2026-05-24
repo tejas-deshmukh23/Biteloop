@@ -2,11 +2,14 @@ server:
   port: 8081
 
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+
   application:
     name: user-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tiffin_users}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/tiffin_users}
     username: ${SPRING_DATASOURCE_USERNAME:tiffin}
     password: ${SPRING_DATASOURCE_PASSWORD:tiffin123}
     driver-class-name: org.postgresql.Driver
