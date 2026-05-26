@@ -53,6 +53,7 @@ public class JwtUtils {
 	@Value("${jwt.secret}")
 	private String jwtSecret;
 	
+	@Value("${jwt.expiration}")
 	private long jwtExpirationMs; // 86400000 = 24 hours in milliseconds
 	
 	// -- generate token------------------------------------------------
