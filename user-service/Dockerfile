@@ -10,6 +10,9 @@ COPY pom.xml .
 # Copy common-lib (user-service depends on it)
 COPY common-lib/pom.xml common-lib/pom.xml
 COPY common-lib/src common-lib/src
+
+COPY provider-service/pom.xml provider-service/pom.xml
+COPY provider-service/src provider-service/src
  
 # Copy user-service
 COPY user-service/pom.xml user-service/pom.xml

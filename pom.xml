@@ -17,8 +17,8 @@
         <module>common-lib</module>
        <!-- <module>api-gateway</module> -->
         <module>user-service</module>
-<!--        <module>provider-service</module>
-        <module>menu-service</module>
+        <module>provider-service</module>
+<!--        <module>menu-service</module>
         <module>order-service</module>
         <module>subscription-service</module>
         <module>payment-service</module>
