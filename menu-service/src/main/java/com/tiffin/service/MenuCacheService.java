@@ -43,7 +43,12 @@ public class MenuCacheService {
 	
 	@SuppressWarnings("unchecked")
     public void put(String providerId, List<MenuItemResponse> items) {
-        redisTemplate.opsForValue().set(buildKey(providerId), items, TTL);
+		try {
+	        redisTemplate.opsForValue().set(buildKey(providerId), items, TTL);
+	        System.out.println("Cache written for key: " + buildKey(providerId));
+	    } catch (Exception e) {
+	        System.err.println("Redis write failed: " + e.getMessage());
+	    }
     }
 	
 	/**
@@ -52,9 +57,16 @@ public class MenuCacheService {
      */
     @SuppressWarnings("unchecked")
     public List<MenuItemResponse> get(String providerId) {
-        Object cached = redisTemplate.opsForValue().get(buildKey(providerId));
-        if (cached == null) return null;
-        return (List<MenuItemResponse>) cached;
+    	try {
+    		Object cached = redisTemplate.opsForValue().get(buildKey(providerId));
+            if (cached == null) return null;
+            return (List<MenuItemResponse>) cached;
+    	}catch (Exception e) {
+            System.err.println(">>> Redis GET failed: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+        
     }
 
     /**
