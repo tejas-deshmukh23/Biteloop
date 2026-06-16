@@ -15,7 +15,7 @@
     <!-- All child modules -->
     <modules>
         <module>common-lib</module>
-       <!-- <module>api-gateway</module> -->
+        <module>api-gateway</module>
         <module>user-service</module>
         <module>provider-service</module>
         <module>menu-service</module>

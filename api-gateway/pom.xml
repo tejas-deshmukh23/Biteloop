@@ -22,7 +22,7 @@
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
 
-        <!-- Redis for rate limiting via RequestRateLimiter filter -->
+        <!-- Redis reactive — must be reactive version for gateway -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
@@ -47,11 +47,30 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Common lib for shared response wrapper -->
+        <!-- Common lib — exclude spring-web to avoid servlet/reactive conflict -->
         <dependency>
             <groupId>com.tiffin</groupId>
             <artifactId>common-lib</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+                <exclusion>
+                	<groupId>org.springframework.boot</groupId>
+    				<artifactId>spring-boot-starter-data-jpa</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

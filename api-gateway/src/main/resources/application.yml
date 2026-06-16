@@ -5,6 +5,10 @@ spring:
   application:
     name: api-gateway
 
+  # Gateway is reactive — exclude servlet-based kafka autoconfigure
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
@@ -16,7 +20,7 @@ spring:
         cors-configurations:
           '[/**]':
             allowedOrigins: "*"
-            allowedMethods: ["GET","POST","PUT","DELETE","OPTIONS"]
+            allowedMethods: ["GET","POST","PUT","DELETE","PATCH","OPTIONS"]
             allowedHeaders: "*"
 
       routes:
@@ -38,7 +42,7 @@ spring:
         - id: menu-service
           uri: http://menu-service:8083
           predicates:
-            - Path=/api/menus/**
+            - Path=/api/menu/**        # ← fixed: was /api/menus/** but controller uses /api/menu
           filters:
             - AuthFilter
 
@@ -74,12 +78,14 @@ jwt:
   secret: ${JWT_SECRET:local-dev-secret-minimum-32-characters-long!!}
   expiration: ${JWT_EXPIRATION:86400000}
 
+# Public endpoints — AuthFilter skips JWT validation for these
 public-endpoints:
   - /api/users/register
   - /api/users/login
-  - /api/menus/**
+  - /api/menu/**              # ← fixed: was /api/menus/**
 
 logging:
   level:
     root: INFO
     com.tiffin: DEBUG
+    org.springframework.cloud.gateway: DEBUG   # ← added: shows routing decisions

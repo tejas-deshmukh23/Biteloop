@@ -13,6 +13,10 @@ COPY common-lib/src common-lib/src
 
 COPY provider-service/pom.xml provider-service/pom.xml
 COPY provider-service/src provider-service/src
+COPY menu-service/pom.xml menu-service/pom.xml
+COPY menu-service/src menu-service/src
+COPY api-gateway/pom.xml api-gateway/pom.xml
+COPY api-gateway/src api-gateway/src
  
 # Copy user-service
 COPY user-service/pom.xml user-service/pom.xml
