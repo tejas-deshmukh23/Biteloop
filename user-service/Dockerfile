@@ -17,6 +17,8 @@ COPY menu-service/pom.xml menu-service/pom.xml
 COPY menu-service/src menu-service/src
 COPY api-gateway/pom.xml api-gateway/pom.xml
 COPY api-gateway/src api-gateway/src
+COPY order-service/pom.xml order-service/pom.xml
+COPY order-service/src order-service/src
  
 # Copy user-service
 COPY user-service/pom.xml user-service/pom.xml

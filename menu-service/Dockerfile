@@ -12,6 +12,8 @@ COPY user-service/pom.xml user-service/
 COPY provider-service/pom.xml provider-service/
 COPY menu-service/pom.xml menu-service/
 COPY api-gateway/pom.xml api-gateway/pom.xml
+COPY order-service/pom.xml order-service/pom.xml
+COPY order-service/src order-service/src
 
 # Now copy all source code
 COPY common-lib/src common-lib/src

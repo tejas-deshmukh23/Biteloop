@@ -82,6 +82,12 @@ public class JwtUtils {
 		claims.put("email", user.getEmail());
 		claims.put("role", user.getRole().name());
 		
+		// Include providerId in token if user is a PROVIDER
+	    // Gateway will inject it as X-Provider-Id header
+	    if (user.getProviderId() != null) {
+	        claims.put("providerId", user.getProviderId());
+	    }
+		
 		return Jwts.builder()
 				.setClaims(claims)
 				.setSubject(user.getId())
@@ -133,6 +139,15 @@ public class JwtUtils {
      */
     public String getUserIdFromToken(String token) {
         return extractAllClaims(token).getSubject();
+    }
+    
+    /**
+     * Extracts providerId from token claims.
+     * Only present for PROVIDER role tokens.
+     * Returns null for CUSTOMER and ADMIN tokens.
+     */
+    public String getProviderIdFromToken(String token) {
+        return (String) extractAllClaims(token).get("providerId");
     }
  
     /**

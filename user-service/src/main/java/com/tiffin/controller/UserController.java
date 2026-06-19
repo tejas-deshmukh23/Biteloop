@@ -10,10 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -117,5 +119,19 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(
                 "Profile updated successfully",
                 updatedProfile));
+    }
+    
+    /**
+     * Internal endpoint — called by provider-service after provider registration.
+     * NOT exposed publicly — only accessible within Docker network.
+     * TODO: Replace with Kafka event in Milestone 8 (PROVIDER_REGISTERED event)
+     */
+    @PutMapping("/internal/update-provider-id")
+    public ResponseEntity<ApiResponse<Void>> updateProviderId(
+            @RequestParam String userId,
+            @RequestParam String providerId) {
+
+        userService.updateProviderId(userId, providerId);
+        return ResponseEntity.ok(ApiResponse.success("Provider ID updated", null));
     }
 }

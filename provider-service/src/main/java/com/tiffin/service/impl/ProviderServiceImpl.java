@@ -1,5 +1,6 @@
 package com.tiffin.service.impl;
 
+import com.tiffin.client.UserServiceClient;
 import com.tiffin.common.enums.ProviderStatus;
 import com.tiffin.common.exception.TiffinException;
 import com.tiffin.dto.CreateProviderRequest;
@@ -23,9 +24,13 @@ public class ProviderServiceImpl implements ProviderService {
     private static final Logger log = LoggerFactory.getLogger(ProviderServiceImpl.class);
 
     private final ProviderRepository providerRepository;
+    
+    private final UserServiceClient userServiceClient;  // ← add this
 
-    public ProviderServiceImpl(ProviderRepository providerRepository) {
+    public ProviderServiceImpl(ProviderRepository providerRepository,
+    		UserServiceClient userServiceClient) {
         this.providerRepository = providerRepository;
+        this.userServiceClient = userServiceClient;
     }
 
     // ── Register Provider ──────────────────────────────────────────────────
@@ -55,6 +60,11 @@ public class ProviderServiceImpl implements ProviderService {
 
         Provider saved = providerRepository.save(provider);
         log.info("Provider registered with id: {} status: PENDING", saved.getId());
+        
+        // TODO: Replace with Kafka event in Milestone 8
+        // Notify user-service to store providerId against this user account
+        // so JWT token can include it for provider-specific operations
+        userServiceClient.updateProviderId(ownerId, saved.getId());
 
         return mapToResponse(saved);
     }

@@ -30,6 +30,9 @@ import jakarta.persistence.*;
     }
 )
 public class User extends BaseEntity {
+	
+	@Column(name = "provider_id", length = 40)
+	private String providerId;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -90,12 +93,20 @@ public class User extends BaseEntity {
     }
 
     // ── Getters and Setters ────────────────────────────────────────────────
+    
+    public String getProviderId() {
+		return providerId;
+	}
+
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
+	}
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+	public void setName(String name) {
         this.name = name;
     }
 

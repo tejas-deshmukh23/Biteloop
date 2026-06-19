@@ -43,4 +43,6 @@ public interface UserService {
      * Email and role are never updatable after registration.
      */
     UserProfileResponse updateProfile(String userId, UpdateProfileRequest request);
+    
+    void updateProviderId(String userId, String providerId);
 }

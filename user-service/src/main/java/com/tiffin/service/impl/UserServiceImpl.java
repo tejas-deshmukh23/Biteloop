@@ -199,4 +199,16 @@ public class UserServiceImpl implements UserService {
                 user.getCreatedAt()
         );
     }
+
+	@Override
+	public void updateProviderId(String userId, String providerId) {
+		User user = userRepository.findById(userId)
+	            .orElseThrow(() -> new RuntimeException(
+	                    "User not found: " + userId));
+
+	    user.setProviderId(providerId);
+	    userRepository.save(user);
+
+	    log.info("Updated providerId={} for userId={}", providerId, userId);
+	}
 }

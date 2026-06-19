@@ -49,6 +49,11 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getPath().value();
+            
+         // Block internal endpoints from being accessed through gateway
+            if (path.contains("/internal/")) {
+                return unauthorized(exchange, "Access denied");
+            }
 
             // Step 1 — Check if this is a public endpoint
             if (isPublicEndpoint(path)) {
@@ -72,13 +77,27 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
             // Step 4 — Extract user info
             String userId = jwtUtil.getUserId(token);
             String role = jwtUtil.getRole(token);
+            String providerId = jwtUtil.getProviderId(token);
 
-            // Step 5 — Inject headers + remove Authorization
-            ServerHttpRequest mutatedRequest = request.mutate()
+//            // Step 5 — Inject headers + remove Authorization
+//            ServerHttpRequest mutatedRequest = request.mutate()
+//                    .header("X-User-Id", userId)
+//                    .header("X-User-Role", role)
+//                    .header(HttpHeaders.AUTHORIZATION, "") // remove JWT from downstream
+//                    .build();
+            
+         // Build mutated request
+            ServerHttpRequest.Builder requestBuilder = request.mutate()
                     .header("X-User-Id", userId)
                     .header("X-User-Role", role)
-                    .header(HttpHeaders.AUTHORIZATION, "") // remove JWT from downstream
-                    .build();
+                    .header(HttpHeaders.AUTHORIZATION, "");
+
+            // Only inject X-Provider-Id if present (PROVIDER role)
+            if (providerId != null) {
+                requestBuilder.header("X-Provider-Id", providerId);
+            }
+
+            ServerHttpRequest mutatedRequest = requestBuilder.build();
 
             // Step 6 — Forward modified request
             return chain.filter(exchange.mutate().request(mutatedRequest).build());

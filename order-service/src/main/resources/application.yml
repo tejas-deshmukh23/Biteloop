@@ -1,12 +1,15 @@
 server:
-  port: 8082
+  port: 8084
 
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+
   application:
-    name: provider-service
+    name: order-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/tiffin_providers}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/tiffin_orders}
     username: ${SPRING_DATASOURCE_USERNAME:tiffin}
     password: ${SPRING_DATASOURCE_PASSWORD:tiffin123}
     driver-class-name: org.postgresql.Driver
@@ -26,14 +29,13 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      timeout: 2000ms
 
 logging:
   level:
     root: INFO
     com.tiffin: DEBUG
-
-services:
-  user-service:
-    url: ${USER_SERVICE_URL:http://user-service:8081}

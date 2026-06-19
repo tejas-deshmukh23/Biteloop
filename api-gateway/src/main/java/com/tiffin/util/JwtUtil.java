@@ -47,6 +47,14 @@ public class JwtUtil {
     public String getUserId(String token) {
         return getClaims(token).getSubject();
     }
+    
+    /**
+     * Extract providerId from token.
+     * Only present for PROVIDER role — null for others.
+     */
+    public String getProviderId(String token) {
+        return getClaims(token).get("providerId", String.class);
+    }
 
     /**
      * Extract role from token claims.
