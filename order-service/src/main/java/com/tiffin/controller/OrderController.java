@@ -138,4 +138,31 @@ public class OrderController {
         OrderResponse response = orderService.getOrderById(id, userId, role);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+    
+ // ── Internal Endpoints (called by payment-service) ─────────
+
+    /**
+     * Internal — payment-service fetches order to verify amount.
+     * Not exposed through gateway.
+     */
+    
+    @GetMapping("/internal/{orderId}")
+    public ResponseEntity<ApiResponse<OrderResponse>> getOrderInternal(
+            @PathVariable String orderId) {
+        OrderResponse response = orderService.getOrderInternal(orderId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    /**
+     * Internal — payment-service updates order status after payment.
+     * Not exposed through gateway.
+     */
+    
+    @PutMapping("/internal/{orderId}/status")
+    public ResponseEntity<ApiResponse<Void>> updateOrderStatusInternal(
+            @PathVariable String orderId,
+            @RequestParam OrderStatus status) {
+        orderService.updateOrderStatusInternal(orderId, status);
+        return ResponseEntity.ok(ApiResponse.success("Status updated", null));
+    }
 }

@@ -20,8 +20,9 @@
         <module>provider-service</module>
         <module>menu-service</module>
         <module>order-service</module>
-<!--        <module>subscription-service</module>
         <module>payment-service</module>
+<!--        <module>subscription-service</module>
+        
         <module>notification-service</module>
         <module>admin-service</module> -->
     </modules>

@@ -248,4 +248,22 @@ public class OrderServiceImpl implements OrderService {
         response.setSubtotal(item.getSubtotal());
         return response;
     }
+
+	@Override
+	@Transactional(readOnly = true)
+	public OrderResponse getOrderInternal(String orderId) {
+		 Order order = orderRepository.findById(orderId)
+		            .orElseThrow(() -> new OrderNotFoundException(
+		                    "Order not found: " + orderId));
+		    return toResponse(order);
+	}
+
+	@Override
+	public void updateOrderStatusInternal(String orderId, OrderStatus status) {
+		 Order order = orderRepository.findById(orderId)
+		            .orElseThrow(() -> new OrderNotFoundException(
+		                    "Order not found: " + orderId));
+		    order.setStatus(status);
+		    orderRepository.save(order);
+	}
 }

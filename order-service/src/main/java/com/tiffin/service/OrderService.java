@@ -33,4 +33,8 @@ public interface OrderService {
 
     // Get single order by id
     OrderResponse getOrderById(String orderId, String userId, String role);
+    
+    OrderResponse getOrderInternal(String orderId);
+    
+    void updateOrderStatusInternal(String orderId, OrderStatus status);
 }
