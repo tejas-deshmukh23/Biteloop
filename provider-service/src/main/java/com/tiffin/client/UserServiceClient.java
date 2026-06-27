@@ -42,6 +42,8 @@ public class UserServiceClient {
                     .queryParam("userId", userId)
                     .queryParam("providerId", providerId)
                     .toUriString();
+            
+            log.info("url which we are hitting is : ",url);
 
             restTemplate.put(url, null);
             log.info("Successfully updated providerId={} for userId={}", 

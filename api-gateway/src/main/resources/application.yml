@@ -83,6 +83,7 @@ public-endpoints:
   - /api/users/register
   - /api/users/login
   - /api/menu/**              # ← fixed: was /api/menus/**
+  - /api/payments/webhook
 
 logging:
   level:

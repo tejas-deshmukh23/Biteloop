@@ -43,11 +43,29 @@ public class OrderServiceClient {
      * Used to verify amount before creating Razorpay order.
      * We never trust client-sent amount — always verify from source.
      */
+//    public Map<String, Object> getOrderDetails(String orderId) {
+//        try {
+//            String url = orderServiceUrl +
+//                    "/api/orders/internal/" + orderId;
+//            return restTemplate.getForObject(url, Map.class);
+//        } catch (Exception e) {
+//            log.error("Failed to fetch order details for orderId={}: {}",
+//                    orderId, e.getMessage());
+//            throw new RuntimeException(
+//                    "Could not fetch order details: " + e.getMessage());
+//        }
+//    }
     public Map<String, Object> getOrderDetails(String orderId) {
         try {
-            String url = orderServiceUrl +
-                    "/api/orders/internal/" + orderId;
+            String url = UriComponentsBuilder
+                    .fromHttpUrl(orderServiceUrl)
+                    .path("/api/orders/internal/{orderId}")
+                    .buildAndExpand(orderId)
+                    .toUriString();
+
+            log.info("Calling order-service: {}", url);
             return restTemplate.getForObject(url, Map.class);
+
         } catch (Exception e) {
             log.error("Failed to fetch order details for orderId={}: {}",
                     orderId, e.getMessage());

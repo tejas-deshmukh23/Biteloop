@@ -27,15 +27,15 @@ COPY payment-service/src payment-service/src
 # Build in correct order
 RUN mvn install -N -DskipTests
 RUN mvn install -pl common-lib -DskipTests
-RUN mvn package -pl order-service -DskipTests
+RUN mvn package -pl payment-service -DskipTests
 
 # ── Stage 2: Run ───────────────────────────────────────────────
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/order-service/target/*.jar app.jar
+COPY --from=builder /app/payment-service/target/*.jar app.jar
 
-EXPOSE 8084
+EXPOSE 8086
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

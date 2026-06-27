@@ -12,6 +12,7 @@ COPY user-service/pom.xml user-service/
 COPY provider-service/pom.xml provider-service/
 COPY menu-service/pom.xml menu-service/
 COPY api-gateway/pom.xml api-gateway/
+COPY payment-service/pom.xml payment-service/pom.xml
 
 # Copy ALL source code
 COPY common-lib/src common-lib/src
@@ -19,6 +20,7 @@ COPY user-service/src user-service/src
 COPY provider-service/src provider-service/src
 COPY menu-service/src menu-service/src
 COPY api-gateway/src api-gateway/src
+COPY payment-service/src payment-service/src
 
 COPY order-service/pom.xml order-service/pom.xml
 COPY order-service/src order-service/src

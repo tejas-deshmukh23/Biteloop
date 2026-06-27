@@ -31,8 +31,11 @@ spring:
 
 razorpay:
   key-id: ${RAZORPAY_KEY_ID}
+#  Key-id: rzp_test_T3SFSVJ1juDQSe
   key-secret: ${RAZORPAY_KEY_SECRET}
-  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:test-webhook-secret}
+#  key-secret: c50965uoG7AZeD6wGuTfMzi1
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET}
+#  webhook-secret: rzp_test_T3SFSVJ1juDQSe
 
 # Internal service URLs
 services:
