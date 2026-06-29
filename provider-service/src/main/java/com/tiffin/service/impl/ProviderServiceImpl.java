@@ -7,6 +7,7 @@ import com.tiffin.dto.CreateProviderRequest;
 import com.tiffin.dto.ProviderResponse;
 import com.tiffin.dto.UpdateProviderRequest;
 import com.tiffin.entity.Provider;
+import com.tiffin.events.ProviderEventPublisher;
 import com.tiffin.repository.ProviderRepository;
 import com.tiffin.service.ProviderService;
 import org.slf4j.Logger;
@@ -25,12 +26,24 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final ProviderRepository providerRepository;
     
-    private final UserServiceClient userServiceClient;  // ← add this
+    // we will be using this till we don't add kafka events after adding kafka events we will be commeting this REST call
+//    private final UserServiceClient userServiceClient;  // ← add this
+    
+    //adding kafka event
+    private final ProviderEventPublisher eventPublisher;
 
+    //commenting this because here we were initializing userServiceClient which we are not using now because of kafkaEvent
+//    public ProviderServiceImpl(ProviderRepository providerRepository,
+//    		UserServiceClient userServiceClient) {
+//        this.providerRepository = providerRepository;
+//        this.userServiceClient = userServiceClient;
+//    }
+    
+    //updated constructor for kafkaEvent
     public ProviderServiceImpl(ProviderRepository providerRepository,
-    		UserServiceClient userServiceClient) {
+    		ProviderEventPublisher eventPublisher) {
         this.providerRepository = providerRepository;
-        this.userServiceClient = userServiceClient;
+        this.eventPublisher = eventPublisher;
     }
 
     // ── Register Provider ──────────────────────────────────────────────────
@@ -64,7 +77,10 @@ public class ProviderServiceImpl implements ProviderService {
         // TODO: Replace with Kafka event in Milestone 8
         // Notify user-service to store providerId against this user account
         // so JWT token can include it for provider-specific operations
-        userServiceClient.updateProviderId(ownerId, saved.getId());
+//        userServiceClient.updateProviderId(ownerId, saved.getId()); //commenting this REST call as we have added kafka provider registered event
+        
+        //here we are publishing provider.registered event to kafka which will be consumed by user-service to update providerId in user-service
+        eventPublisher.publishProviderRegistered(ownerId, saved.getId());
 
         return mapToResponse(saved);
     }
