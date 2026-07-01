@@ -11,6 +11,8 @@ import com.tiffin.dto.InitiatePaymentRequest;
 import com.tiffin.dto.InitiatePaymentResponse;
 import com.tiffin.dto.PaymentResponse;
 import com.tiffin.entity.Payment;
+import com.tiffin.events.PaymentRefundEventPublisher;
+import com.tiffin.events.PaymentSuccessEventPublisher;
 import com.tiffin.exception.PaymentException;
 import com.tiffin.repository.PaymentRepository;
 import com.tiffin.service.PaymentService;
@@ -32,12 +34,17 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class PaymentServiceImpl implements PaymentService {
+	
+	private PaymentSuccessEventPublisher paymentSuccessEventPublisher;
+	private PaymentRefundEventPublisher paymentRefundEventPublisher;
 
     private static final Logger log =
             LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     private final PaymentRepository paymentRepository;
     private final RazorpayClient razorpayClient;
+    
+    // will be using this only to fetch data and will be using kafka to add or update data
     private final OrderServiceClient orderServiceClient;
 
     @Value("${razorpay.key-id}")
@@ -46,13 +53,27 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${razorpay.webhook-secret}")
     private String webhookSecret;
 
+    
+    //commenting this as we will not be using REST call( OrderServiceClient ) anymore to update order status 
+//    public PaymentServiceImpl(PaymentRepository paymentRepository,
+//                               RazorpayClient razorpayClient,
+//                               OrderServiceClient orderServiceClient) {
+//        this.paymentRepository = paymentRepository;
+//        this.razorpayClient = razorpayClient;
+//        this.orderServiceClient = orderServiceClient;
+//    }
+    
     public PaymentServiceImpl(PaymentRepository paymentRepository,
-                               RazorpayClient razorpayClient,
-                               OrderServiceClient orderServiceClient) {
-        this.paymentRepository = paymentRepository;
-        this.razorpayClient = razorpayClient;
-        this.orderServiceClient = orderServiceClient;
-    }
+	            RazorpayClient razorpayClient,
+	            OrderServiceClient orderServiceClient,
+	            PaymentSuccessEventPublisher paymentSuccessEventPublisher,
+	            PaymentRefundEventPublisher paymentRefundEventPublisher) {
+		this.paymentRepository = paymentRepository;
+		this.razorpayClient = razorpayClient;
+		this.orderServiceClient = orderServiceClient;
+		this.paymentSuccessEventPublisher = paymentSuccessEventPublisher;
+		this.paymentRefundEventPublisher = paymentRefundEventPublisher;
+	}
 
     // ── Initiate Payment ───────────────────────────────────────
 
@@ -211,9 +232,17 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(PaymentStatus.SUCCESS);
         paymentRepository.save(payment);
 
+        
+        //to change this REST call to kafka event, here we will produce kafka event and order-service will consume that event t update status to confirmed
         // Update order status to CONFIRMED
-        orderServiceClient.updateOrderStatus(
-                payment.getOrderId(), OrderStatus.CONFIRMED);
+//        orderServiceClient.updateOrderStatus(
+//                payment.getOrderId(), OrderStatus.CONFIRMED);
+        
+        paymentSuccessEventPublisher.publishPaymentSuccess(payment.getId(),           // pay_ id (our internal)
+                payment.getOrderId(),      // ord_ id (our internal) ← critical
+                payment.getUserId(),       // usr_ id
+                payment.getAmount(),
+                razorpayPaymentId);
 
         log.info("Payment SUCCESS processed: orderId={}", payment.getOrderId());
 
@@ -276,9 +305,18 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(PaymentStatus.REFUNDED);
         paymentRepository.save(payment);
 
+        
+        //Commenting this because we are using kafka event to update order status to cancelled
         // Update order status to CANCELLED
-        orderServiceClient.updateOrderStatus(
-                payment.getOrderId(), OrderStatus.CANCELLED);
+//        orderServiceClient.updateOrderStatus(
+//                payment.getOrderId(), OrderStatus.CANCELLED);
+        
+        paymentRefundEventPublisher.publishPaymentRefund(payment.getId(),           // pay_ id (our internal)
+                payment.getOrderId(),      // ord_ id (our internal) ← critical
+                payment.getUserId(),       // usr_ id
+                payment.getAmount(),
+                razorpayRefundId);
+
 
         log.info("Refund PROCESSED: orderId={}", payment.getOrderId());
 
