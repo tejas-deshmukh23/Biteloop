@@ -4,6 +4,8 @@ import com.tiffin.common.enums.OrderStatus;
 import com.tiffin.dto.*;
 import com.tiffin.entity.Order;
 import com.tiffin.entity.OrderItem;
+import com.tiffin.events.OrderPlacedEventPublisher;
+import com.tiffin.events.UpdateOrderStatusEventPublisher;
 import com.tiffin.exception.OrderNotFoundException;
 import com.tiffin.exception.OrderStatusException;
 import com.tiffin.repository.OrderRepository;
@@ -21,15 +23,20 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    
+    private OrderPlacedEventPublisher orderPlacedEventPublisher;
+    private UpdateOrderStatusEventPublisher updateOrderStatusEventPublisher;
 
-    public OrderServiceImpl(OrderRepository orderRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderPlacedEventPublisher orderPlacedEventPublisher, UpdateOrderStatusEventPublisher updateOrderStatusEventPublisher) {
         this.orderRepository = orderRepository;
+        this.orderPlacedEventPublisher = orderPlacedEventPublisher;
+        this.updateOrderStatusEventPublisher = updateOrderStatusEventPublisher;
     }
 
     // ── Place Order ────────────────────────────────────────────
 
     @Override
-    public OrderResponse placeOrder(String userId, OrderRequest request) {
+    public OrderResponse placeOrder(String userId, OrderRequest request, String email) {
 
         // Calculate total from items — never trust client total
         BigDecimal totalAmount = request.getItems().stream()
@@ -43,7 +50,8 @@ public class OrderServiceImpl implements OrderService {
                 request.getProviderId(),
                 totalAmount,
                 request.getDeliveryAddress(),
-                request.getNotes()
+                request.getNotes(),
+                email
         );
 
         // Create order items and link to order
@@ -66,6 +74,9 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO: Publish ORDER_PLACED Kafka event for notification-service
         // Will implement when Kafka events milestone begins
+        
+        //we won't be saving email in order entity we will be just passing email in the kafka event which later will be consumed by notification-service and will use that email to send the particular notification
+        orderPlacedEventPublisher.publishOrderPlacedEvent(order.getId(), userId, request.getProviderId(), totalAmount, request.getDeliveryAddress(), email);
 
         return toResponse(saved);
     }
@@ -147,11 +158,15 @@ public class OrderServiceImpl implements OrderService {
                         "Order not found or does not belong to your business"));
 
         validateStatusTransition(order.getStatus(), request.getStatus());
+        
+        //get here old status for our kafka event which wants old and new status
+        OrderStatus oldStatus = order.getStatus();
 
         order.setStatus(request.getStatus());
         Order updated = orderRepository.save(order);
 
         // TODO: Publish ORDER_STATUS_UPDATED Kafka event
+        updateOrderStatusEventPublisher.publishUpdateOrderStatusEvent(orderId, updated.getUserId(), providerId, oldStatus, request.getStatus(), order.getEmail()); //this email will be of customer's email not provider email and this kafka event will be consumed and notification will be sent to customer over his email not provider
 
         return toResponse(updated);
     }

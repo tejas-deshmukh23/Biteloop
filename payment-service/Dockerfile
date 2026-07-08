@@ -24,6 +24,9 @@ COPY api-gateway/src api-gateway/src
 COPY order-service/src order-service/src
 COPY payment-service/src payment-service/src
 
+COPY notification-service/pom.xml notification-service/pom.xml
+COPY notification-service/src notification-service/src
+
 # Build in correct order
 RUN mvn install -N -DskipTests
 RUN mvn install -pl common-lib -DskipTests

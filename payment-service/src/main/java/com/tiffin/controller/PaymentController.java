@@ -20,6 +20,7 @@ import java.util.List;
  * Auth strategy — same as other services:
  * X-User-Id   → injected by gateway
  * X-User-Role → injected by gateway
+ * X-User-Email -> injected by gateway
  *
  * Special endpoint — /api/payments/webhook:
  * Called by Razorpay directly — NO auth headers
@@ -52,6 +53,7 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiatePayment(
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-User-Role") String role,
+            @RequestHeader("X-User-Email") String email,
             @Valid @RequestBody InitiatePaymentRequest request) {
 
         if (!"CUSTOMER".equals(role)) {
@@ -60,7 +62,7 @@ public class PaymentController {
         }
 
         InitiatePaymentResponse response =
-                paymentService.initiatePayment(userId, request);
+                paymentService.initiatePayment(userId, request, email);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Payment initiated", response));

@@ -46,6 +46,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> placeOrder(
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-User-Role") String role,
+            @RequestHeader("X-User-Email") String email,
             @Valid @RequestBody OrderRequest request) {
 
         if (!"CUSTOMER".equals(role)) {
@@ -53,7 +54,7 @@ public class OrderController {
                     .body(ApiResponse.error("Only customers can place orders"));
         }
 
-        OrderResponse response = orderService.placeOrder(userId, request);
+        OrderResponse response = orderService.placeOrder(userId, request, email);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Order placed successfully", response));
     }

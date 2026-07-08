@@ -27,13 +27,13 @@ public class PaymentSuccessEventPublisher {
      * order-service consumes this to update status to CONFIRMED.
      */
     
-    public void publishPaymentSuccess(String paymentId, String orderId, String userId, BigDecimal amount, String razorpayPaymentId) {
-    	PaymentSuccessEvent event = new PaymentSuccessEvent(paymentId, orderId, userId, amount, razorpayPaymentId);
+    public void publishPaymentSuccess(String paymentId, String orderId, String userId, BigDecimal amount, String razorpayPaymentId, String email) {
+    	PaymentSuccessEvent event = new PaymentSuccessEvent(paymentId, orderId, userId, amount, razorpayPaymentId, email);
     	
     	kafkaTemplate.send(KafkaTopics.PAYMENT_SUCCESS, orderId, event);
     	
-    	log.info("Published PAYMENT_SUCCESS event: paymentId={} orderId={} userId={} amount={} razorpayPaymentId={}",
-    			paymentId, orderId, userId, amount, razorpayPaymentId);
+    	log.info("Published PAYMENT_SUCCESS event: paymentId={} orderId={} userId={} amount={} razorpayPaymentId={} email={}",
+    			paymentId, orderId, userId, amount, razorpayPaymentId, email);
     }
 
 

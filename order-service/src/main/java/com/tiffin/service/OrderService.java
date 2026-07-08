@@ -10,7 +10,7 @@ import java.util.List;
 public interface OrderService {
 
     // Customer places a new order
-    OrderResponse placeOrder(String userId, OrderRequest request);
+    OrderResponse placeOrder(String userId, OrderRequest request, String email);
 
     // Customer views their own orders
     List<OrderResponse> getMyOrders(String userId);

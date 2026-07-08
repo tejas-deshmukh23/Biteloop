@@ -14,17 +14,19 @@ public class OrderStatusUpdatedEvent {
     private String providerId;
     private OrderStatus oldStatus;
     private OrderStatus newStatus;
+    private String email;
 
     public OrderStatusUpdatedEvent() {}
 
     public OrderStatusUpdatedEvent(String orderId, String userId,
                                    String providerId, OrderStatus oldStatus,
-                                   OrderStatus newStatus) {
+                                   OrderStatus newStatus, String email) {
         this.orderId = orderId;
         this.userId = userId;
         this.providerId = providerId;
         this.oldStatus = oldStatus;
         this.newStatus = newStatus;
+        this.email = email;
     }
 
     public String getOrderId() { return orderId; }
@@ -41,4 +43,12 @@ public class OrderStatusUpdatedEvent {
 
     public OrderStatus getNewStatus() { return newStatus; }
     public void setNewStatus(OrderStatus newStatus) { this.newStatus = newStatus; }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

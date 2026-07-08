@@ -40,6 +40,9 @@ public class Payment extends BaseEntity {
 
     @Column(name = "user_id", nullable = false, length = 40)
     private String userId;
+    
+    @Column(name = "email", nullable = false, length = 150)
+    private String email;
 
     /**
      * Amount in INR.
@@ -91,12 +94,13 @@ public class Payment extends BaseEntity {
     public Payment() {}
 
     public Payment(String orderId, String userId,
-                   BigDecimal amount, String razorpayOrderId) {
+                   BigDecimal amount, String razorpayOrderId, String email) {
         this.orderId = orderId;
         this.userId = userId;
         this.amount = amount;
         this.razorpayOrderId = razorpayOrderId;
         this.status = PaymentStatus.PENDING;
+        this.email = email;
     }
 
     // ── BaseEntity ─────────────────────────────────────────────
@@ -136,7 +140,15 @@ public class Payment extends BaseEntity {
     public void setFailureReason(String failureReason) {
         this.failureReason = failureReason; }
 
-    @Override
+    public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Override
     public String toString() {
         return "Payment{" +
                 "id='" + getId() + '\'' +

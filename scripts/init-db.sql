@@ -8,6 +8,7 @@ CREATE DATABASE tiffin_orders;
 CREATE DATABASE tiffin_subscriptions;
 CREATE DATABASE tiffin_payments;
 CREATE DATABASE tiffin_admin;
+CREATE DATABASE tiffin_notifications;
 
 -- Grant all to the tiffin user
 GRANT ALL PRIVILEGES ON DATABASE tiffin_users TO tiffin;
@@ -17,3 +18,4 @@ GRANT ALL PRIVILEGES ON DATABASE tiffin_orders TO tiffin;
 GRANT ALL PRIVILEGES ON DATABASE tiffin_subscriptions TO tiffin;
 GRANT ALL PRIVILEGES ON DATABASE tiffin_payments TO tiffin;
 GRANT ALL PRIVILEGES ON DATABASE tiffin_admin TO tiffin;
+GRANT ALL PRIVILEGES ON DATABASE tiffin_notifications to tiffin;

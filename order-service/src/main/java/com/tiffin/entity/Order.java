@@ -37,6 +37,9 @@ public class Order extends BaseEntity {
 
     @Column(name = "provider_id", nullable = false, length = 40)
     private String providerId;
+    
+    @Column(name = "email", nullable = false, length = 150)
+    private String email; //this will be a customer email which we will save when customers order is placed
 
     /**
      * Stored as VARCHAR — consistent with other enums.
@@ -85,13 +88,14 @@ public class Order extends BaseEntity {
     public Order() {}
 
     public Order(String userId, String providerId,
-                 BigDecimal totalAmount, String deliveryAddress, String notes) {
+                 BigDecimal totalAmount, String deliveryAddress, String notes, String email) {
         this.userId = userId;
         this.providerId = providerId;
         this.totalAmount = totalAmount;
         this.deliveryAddress = deliveryAddress;
         this.notes = notes;
         this.status = OrderStatus.PENDING;
+        this.email = email;
     }
 
     // ── BaseEntity ─────────────────────────────────────────────
@@ -124,7 +128,15 @@ public class Order extends BaseEntity {
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
 
-    @Override
+    public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Override
     public String toString() {
         return "Order{" +
                 "id='" + getId() + '\'' +

@@ -17,4 +17,5 @@ public final class PrefixConstants {
     public static final String SUBSCRIPTION_PLAN = "spl_";
     public static final String SUBSCRIPTION = "sub_";
     public static final String PAYMENT      = "pay_";
+    public static final String NOTIFICATION = "ntf_";
 }

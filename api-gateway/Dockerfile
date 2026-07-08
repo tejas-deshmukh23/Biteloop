@@ -25,6 +25,9 @@ COPY payment-service/src payment-service/src
 COPY order-service/pom.xml order-service/pom.xml
 COPY order-service/src order-service/src
 
+COPY notification-service/pom.xml notification-service/pom.xml
+COPY notification-service/src notification-service/src
+
 # Install parent pom first
 RUN mvn install -N -DskipTests
 

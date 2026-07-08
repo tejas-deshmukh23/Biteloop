@@ -14,17 +14,19 @@ public class OrderPlacedEvent {
     private String providerId;
     private BigDecimal totalAmount;
     private String deliveryAddress;
+    private String email; //we will be getting this email from X-User-email from auth Header and this email will not be stored in Order Entity
 
     public OrderPlacedEvent() {}
 
     public OrderPlacedEvent(String orderId, String userId,
                             String providerId, BigDecimal totalAmount,
-                            String deliveryAddress) {
+                            String deliveryAddress, String email) {
         this.orderId = orderId;
         this.userId = userId;
         this.providerId = providerId;
         this.totalAmount = totalAmount;
         this.deliveryAddress = deliveryAddress;
+        this.email = email;
     }
 
     public String getOrderId() { return orderId; }
@@ -41,4 +43,12 @@ public class OrderPlacedEvent {
 
     public String getDeliveryAddress() { return deliveryAddress; }
     public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

@@ -21,6 +21,8 @@ COPY order-service/pom.xml order-service/pom.xml
 COPY order-service/src order-service/src
 COPY payment-service/pom.xml payment-service/pom.xml
 COPY payment-service/src payment-service/src
+COPY notification-service/pom.xml notification-service/pom.xml
+COPY notification-service/src notification-service/src
  
 # Copy user-service
 COPY user-service/pom.xml user-service/pom.xml

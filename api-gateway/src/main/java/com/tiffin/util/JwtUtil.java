@@ -63,6 +63,10 @@ public class JwtUtil {
     public String getRole(String token) {
         return getClaims(token).get("role", String.class);
     }
+    
+    public String getEmail(String token) {
+    	return getClaims(token).get("email", String.class);
+    }
 
     // ── Private ────────────────────────────────────────────────
 

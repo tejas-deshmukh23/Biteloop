@@ -78,6 +78,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
             String userId = jwtUtil.getUserId(token);
             String role = jwtUtil.getRole(token);
             String providerId = jwtUtil.getProviderId(token);
+            String email = jwtUtil.getEmail(token); //we will need this email for notification so adding it here on date 06/07/2026
 
 //            // Step 5 — Inject headers + remove Authorization
 //            ServerHttpRequest mutatedRequest = request.mutate()
@@ -90,6 +91,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
             ServerHttpRequest.Builder requestBuilder = request.mutate()
                     .header("X-User-Id", userId)
                     .header("X-User-Role", role)
+                    .header("X-User-Email", email)
                     .header(HttpHeaders.AUTHORIZATION, "");
 
             // Only inject X-Provider-Id if present (PROVIDER role)

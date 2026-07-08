@@ -15,17 +15,19 @@ public class PaymentRefundedEvent {
     private String userId;
     private BigDecimal refundAmount;
     private String razorpayRefundId;
+    private String email;
 
     public PaymentRefundedEvent() {}
 
     public PaymentRefundedEvent(String paymentId, String orderId,
                                 String userId, BigDecimal refundAmount,
-                                String razorpayRefundId) {
+                                String razorpayRefundId, String email) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.userId = userId;
         this.refundAmount = refundAmount;
         this.razorpayRefundId = razorpayRefundId;
+        this.email = email;
     }
 
     public String getPaymentId() { return paymentId; }
@@ -44,4 +46,13 @@ public class PaymentRefundedEvent {
     public String getRazorpayRefundId() { return razorpayRefundId; }
     public void setRazorpayRefundId(String razorpayRefundId) {
         this.razorpayRefundId = razorpayRefundId; }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+    
 }

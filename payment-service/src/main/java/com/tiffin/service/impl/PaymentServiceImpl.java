@@ -11,6 +11,7 @@ import com.tiffin.dto.InitiatePaymentRequest;
 import com.tiffin.dto.InitiatePaymentResponse;
 import com.tiffin.dto.PaymentResponse;
 import com.tiffin.entity.Payment;
+import com.tiffin.events.PaymentFailedEventPublisher;
 import com.tiffin.events.PaymentRefundEventPublisher;
 import com.tiffin.events.PaymentSuccessEventPublisher;
 import com.tiffin.exception.PaymentException;
@@ -37,6 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	private PaymentSuccessEventPublisher paymentSuccessEventPublisher;
 	private PaymentRefundEventPublisher paymentRefundEventPublisher;
+	private PaymentFailedEventPublisher paymentFailedEventPublisher;
 
     private static final Logger log =
             LoggerFactory.getLogger(PaymentServiceImpl.class);
@@ -67,19 +69,21 @@ public class PaymentServiceImpl implements PaymentService {
 	            RazorpayClient razorpayClient,
 	            OrderServiceClient orderServiceClient,
 	            PaymentSuccessEventPublisher paymentSuccessEventPublisher,
-	            PaymentRefundEventPublisher paymentRefundEventPublisher) {
+	            PaymentRefundEventPublisher paymentRefundEventPublisher,
+	            PaymentFailedEventPublisher paymentFailedEventPublisher) {
 		this.paymentRepository = paymentRepository;
 		this.razorpayClient = razorpayClient;
 		this.orderServiceClient = orderServiceClient;
 		this.paymentSuccessEventPublisher = paymentSuccessEventPublisher;
 		this.paymentRefundEventPublisher = paymentRefundEventPublisher;
+		this.paymentFailedEventPublisher = paymentFailedEventPublisher;
 	}
 
     // ── Initiate Payment ───────────────────────────────────────
 
     @Override
     public InitiatePaymentResponse initiatePayment(String userId,
-                                                    InitiatePaymentRequest request) {
+                                                    InitiatePaymentRequest request, String email) {
         log.info("Initiating payment for userId={} orderId={}",
                 userId, request.getOrderId());
 
@@ -144,7 +148,8 @@ public class PaymentServiceImpl implements PaymentService {
                     request.getOrderId(),
                     userId,
                     amount,
-                    razorpayOrderId
+                    razorpayOrderId,
+                    email
             );
             Payment saved = paymentRepository.save(payment);
 
@@ -242,7 +247,8 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.getOrderId(),      // ord_ id (our internal) ← critical
                 payment.getUserId(),       // usr_ id
                 payment.getAmount(),
-                razorpayPaymentId);
+                razorpayPaymentId,
+                payment.getEmail());
 
         log.info("Payment SUCCESS processed: orderId={}", payment.getOrderId());
 
@@ -280,6 +286,14 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("Payment FAILED processed: orderId={}", payment.getOrderId());
 
         // TODO: Publish PAYMENT_FAILED Kafka event in Milestone 8
+        paymentFailedEventPublisher.publishPaymentFailed(
+        		payment.getId(),           // pay_ id (our internal)
+                payment.getOrderId(),      // ord_ id (our internal) ← critical
+                payment.getUserId(),       // usr_ id
+                "PAYMENT FAILED",
+                payment.getAmount(),
+                payment.getEmail()
+        );
     }
 
     private void handleRefundCreated(JSONObject webhookBody) {
@@ -315,7 +329,8 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.getOrderId(),      // ord_ id (our internal) ← critical
                 payment.getUserId(),       // usr_ id
                 payment.getAmount(),
-                razorpayRefundId);
+                razorpayRefundId,
+                payment.getEmail());
 
 
         log.info("Refund PROCESSED: orderId={}", payment.getOrderId());

@@ -11,7 +11,7 @@ public interface PaymentService {
 
     // Customer initiates payment for an order
     InitiatePaymentResponse initiatePayment(String userId,
-                                            InitiatePaymentRequest request);
+                                            InitiatePaymentRequest request, String email);
 
     // Handle webhook from Razorpay
     void handleWebhook(String payload, String razorpaySignature);
