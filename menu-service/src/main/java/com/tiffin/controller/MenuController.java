@@ -16,21 +16,27 @@ import java.util.List;
  * All routes under /api/menu
  *
  * Auth strategy:
- *   - X-User-Id   → who is making the request (injected by gateway)
- *   - X-User-Role → their role (PROVIDER, CUSTOMER, ADMIN)
+ *   - X-User-Id     → who is making the request (injected by gateway)
+ *   - X-Provider-Id → their business ID (prv_xxx) — injected by gateway
+ *                     only present when X-User-Role = PROVIDER
+ *   - X-User-Role   → their role (PROVIDER, CUSTOMER, ADMIN)
+ *
+ * Why X-Provider-Id and not X-User-Id for provider operations?
+ * Menu items belong to the provider business (prv_xxx), not the
+ * user account (usr_xxx). Customers query menu by providerId —
+ * so we must store and match using prv_xxx consistently.
  *
  * No Spring Security here — gateway handles token validation.
  * We trust these headers (in prod they only come from the gateway).
- * In testing, send them manually via Postman.
  *
  * Endpoints:
- *   POST   /api/menu                          → provider creates item
- *   GET    /api/menu/provider/{providerId}    → public listing (cached)
- *   GET    /api/menu/my                       → provider's own full list
+ *   POST   /api/menu                              → provider creates item
+ *   GET    /api/menu/provider/{providerId}        → public listing (cached)
+ *   GET    /api/menu/my                           → provider's own full list
  *   GET    /api/menu/provider/{providerId}/filter → filter by veg/category
- *   PUT    /api/menu/{id}                     → provider updates item
- *   PATCH  /api/menu/{id}/toggle              → toggle availability
- *   DELETE /api/menu/{id}                     → soft delete
+ *   PUT    /api/menu/{id}                         → provider updates item
+ *   PATCH  /api/menu/{id}/toggle                  → toggle availability
+ *   DELETE /api/menu/{id}                         → soft delete
  */
 @RestController
 @RequestMapping("/api/menu")
@@ -46,7 +52,8 @@ public class MenuController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<MenuItemResponse>> createItem(
-            @RequestHeader("X-User-Id") String providerId,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Provider-Id") String providerId,
             @RequestHeader("X-User-Role") String role,
             @Valid @RequestBody MenuItemRequest request) {
 
@@ -74,7 +81,8 @@ public class MenuController {
 
     @GetMapping("/my")
     public ResponseEntity<ApiResponse<List<MenuItemResponse>>> getMyItems(
-            @RequestHeader("X-User-Id") String providerId,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Provider-Id") String providerId,
             @RequestHeader("X-User-Role") String role) {
 
         if (!"PROVIDER".equals(role)) {
@@ -101,7 +109,6 @@ public class MenuController {
         } else if (category != null) {
             items = menuService.getByCategory(providerId, category);
         } else {
-            // No filter — same as public listing
             items = menuService.getAvailableItems(providerId);
         }
 
@@ -113,7 +120,8 @@ public class MenuController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<MenuItemResponse>> updateItem(
             @PathVariable String id,
-            @RequestHeader("X-User-Id") String providerId,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Provider-Id") String providerId,
             @RequestHeader("X-User-Role") String role,
             @Valid @RequestBody MenuItemRequest request) {
 
@@ -131,7 +139,8 @@ public class MenuController {
     @PatchMapping("/{id}/toggle")
     public ResponseEntity<ApiResponse<MenuItemResponse>> toggleAvailability(
             @PathVariable String id,
-            @RequestHeader("X-User-Id") String providerId,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Provider-Id") String providerId,
             @RequestHeader("X-User-Role") String role) {
 
         if (!"PROVIDER".equals(role)) {
@@ -148,7 +157,8 @@ public class MenuController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteItem(
             @PathVariable String id,
-            @RequestHeader("X-User-Id") String providerId,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Provider-Id") String providerId,
             @RequestHeader("X-User-Role") String role) {
 
         if (!"PROVIDER".equals(role)) {

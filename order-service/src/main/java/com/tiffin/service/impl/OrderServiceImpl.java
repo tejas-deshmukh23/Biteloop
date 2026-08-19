@@ -4,6 +4,7 @@ import com.tiffin.common.enums.OrderStatus;
 import com.tiffin.dto.*;
 import com.tiffin.entity.Order;
 import com.tiffin.entity.OrderItem;
+import com.tiffin.events.OrderCancelledEventPublisher;
 import com.tiffin.events.OrderPlacedEventPublisher;
 import com.tiffin.events.UpdateOrderStatusEventPublisher;
 import com.tiffin.exception.OrderNotFoundException;
@@ -26,11 +27,13 @@ public class OrderServiceImpl implements OrderService {
     
     private OrderPlacedEventPublisher orderPlacedEventPublisher;
     private UpdateOrderStatusEventPublisher updateOrderStatusEventPublisher;
+    private OrderCancelledEventPublisher orderCancelledEventPublisher;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderPlacedEventPublisher orderPlacedEventPublisher, UpdateOrderStatusEventPublisher updateOrderStatusEventPublisher) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderPlacedEventPublisher orderPlacedEventPublisher, UpdateOrderStatusEventPublisher updateOrderStatusEventPublisher, OrderCancelledEventPublisher orderCancelledEventPublisher) {
         this.orderRepository = orderRepository;
         this.orderPlacedEventPublisher = orderPlacedEventPublisher;
         this.updateOrderStatusEventPublisher = updateOrderStatusEventPublisher;
+        this.orderCancelledEventPublisher = orderCancelledEventPublisher;
     }
 
     // ── Place Order ────────────────────────────────────────────
@@ -122,6 +125,7 @@ public class OrderServiceImpl implements OrderService {
         Order updated = orderRepository.save(order);
 
         // TODO: Publish ORDER_CANCELLED Kafka event
+        orderCancelledEventPublisher.publishOrderCancelledEvent(orderId, userId, order.getProviderId(), order.getTotalAmount(), order.getDeliveryAddress(), order.getEmail());
 
         return toResponse(updated);
     }

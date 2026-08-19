@@ -9,7 +9,8 @@ spring:
     name: payment-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/tiffin_payments}
+#    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/tiffin_payments}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://host.docker.internal:5433/tiffin_payments}
     username: ${SPRING_DATASOURCE_USERNAME:tiffin}
     password: ${SPRING_DATASOURCE_PASSWORD:tiffin123}
     driver-class-name: org.postgresql.Driver

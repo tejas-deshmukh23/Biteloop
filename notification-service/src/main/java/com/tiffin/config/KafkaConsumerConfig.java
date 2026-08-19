@@ -136,6 +136,19 @@ public class KafkaConsumerConfig {
             orderPlacedListenerFactory() {
         return buildFactory(orderPlacedConsumerFactory());
     }
+    
+    // ---- order.cancelled --------------------------------------------
+    @Bean
+    public ConsumerFactory<String, Object> orderCancelledConsumerFactory() {
+    	Map<String, Object> config = baseConfig();
+    	config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.tiffin.common.events.OrderCancelledEvent");
+    	return new DefaultKafkaConsumerFactory<>(config);
+    }
+    
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> orderCancelledListenerFactory() {
+    	return buildFactory(orderCancelledConsumerFactory());
+    }
 
     // ── order.status.updated ───────────────────────────────────
 

@@ -149,6 +149,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * SecurityConfig for user-service — post gateway architecture.
@@ -174,10 +175,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final HeaderAuthFilter headerAuthFilter;   // ← add this
 
     // JwtAuthFilter removed from constructor — no longer needed in filter chain
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, HeaderAuthFilter headerAuthFilter) {
         this.userDetailsService = userDetailsService;
+        this.headerAuthFilter = headerAuthFilter;
     }
 
     @Bean
@@ -194,7 +197,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authenticationProvider(authenticationProvider());
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(headerAuthFilter, UsernamePasswordAuthenticationFilter.class);  // ← add this;
 
         // JwtAuthFilter intentionally NOT added here
         // Gateway is the auth layer — not individual services

@@ -15,4 +15,5 @@ public final class KafkaTopics {
     public static final String PAYMENT_SUCCESS        = "payment.success";
     public static final String PAYMENT_FAILED         = "payment.failed";
     public static final String PAYMENT_REFUNDED       = "payment.refunded";
+    public static final String ORDER_CANCELLED        = "order.cancelled";
 }

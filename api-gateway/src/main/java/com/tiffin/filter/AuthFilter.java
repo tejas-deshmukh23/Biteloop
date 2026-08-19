@@ -98,8 +98,21 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
             if (providerId != null) {
                 requestBuilder.header("X-Provider-Id", providerId);
             }
-
+            
+         // Build the request
             ServerHttpRequest mutatedRequest = requestBuilder.build();
+
+            // Check what is actually in the headers
+            System.out.println("X-User-Id before forwarding: "
+                    + mutatedRequest.getHeaders().getFirst("X-User-Id"));
+
+            System.out.println("X-User-Role before forwarding: "
+                    + mutatedRequest.getHeaders().getFirst("X-User-Role"));
+
+            System.out.println("X-Provider-Id before forwarding: "
+                    + mutatedRequest.getHeaders().getFirst("X-Provider-Id"));
+
+//            ServerHttpRequest mutatedRequest = requestBuilder.build();
 
             // Step 6 — Forward modified request
             return chain.filter(exchange.mutate().request(mutatedRequest).build());

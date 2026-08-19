@@ -72,6 +72,14 @@ public class NotificationRouter {
     public List<NotificationChannel> forOrderPlaced() {
         return List.of(emailChannel);
     }
+    
+    /**
+     * Channels to use for order.cancelled events.
+     * Each call uses these channels independently.
+     */ 
+    public List<NotificationChannel> forOrderCancelled() {
+        return List.of(emailChannel);
+    }
 
     /**
      * Channels to use for order.status.updated events.

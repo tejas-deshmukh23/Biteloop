@@ -159,7 +159,7 @@ public class NotificationEventConsumer {
     // ── provider.registered ────────────────────────────────────
 
     @KafkaListener(
-        topics = "provider.registered",
+        topics = KafkaTopics.PROVIDER_REGISTERED,
         containerFactory = "providerRegisteredListenerFactory"
     )
     public void onProviderRegistered(ProviderRegisteredEvent event) {
@@ -235,6 +235,39 @@ public class NotificationEventConsumer {
             log.error("Failed to process order.placed notification: " +
                     "orderId={} error={}", event.getOrderId(), e.getMessage());
         }
+    }
+    
+    // ---- order.cancelled --------------------------------------------
+    @KafkaListener(
+    		topics = KafkaTopics.ORDER_CANCELLED,
+    		containerFactory = "orderCancelledListenerFactory"
+    )
+    public void onOrderCancelled(OrderCancelledEvent event) {
+    	 log.info("Received order.cancelled: orderId={} userId={}",
+                 event.getOrderId(), event.getUserId());
+    	 
+    	 try {
+    		 //old events published before email field was added
+    		 // will have null email - skip them safely
+    		 if(event.getEmail() == null) {
+    			 log.warn("Skipping order.cancelled — userEmail is null: " +
+                         "orderId={}", event.getOrderId());
+                 return;
+    		 }
+    		 // Notify customer — order received, complete payment
+    		 NotificationContent customerContent = NotificationTemplates.OrderCancelled(event);
+    		 
+    		 notificationService.send(
+                     event.getUserId(),
+                     event.getOrderId(), // suffix prevents
+                     NotificationEventType.ORDER_CANCELLED,// collision with
+                     event.getEmail(),              // provider log entry
+                     customerContent,
+                     router.forOrderCancelled()
+             );
+    	 }catch(Exception e) {
+    		 log.error("Failed to process order.cancelled notification: "+ "orderId={} error={}", event.getOrderId(), e.getMessage());
+    	 }
     }
 
     // ── order.status.updated ───────────────────────────────────

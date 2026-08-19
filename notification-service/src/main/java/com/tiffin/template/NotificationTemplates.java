@@ -120,6 +120,27 @@ public class NotificationTemplates {
         );
         return new NotificationContent(subject, body);
     }
+    
+    public static NotificationContent OrderCancelled(OrderCancelledEvent event) {
+        String subject = "Order Cancelled — #" + shortId(event.getOrderId());
+        String body = """
+                Hi there,
+                
+                Your order has been cancelled successfully!
+                
+                Order ID         : %s
+                Amount           : ₹%s
+                Delivery Address : %s
+                
+                Thank you for choosing Biteloop!
+                Team Biteloop
+                """.formatted(
+                event.getOrderId(),
+                event.getTotalAmount(),
+                event.getDeliveryAddress()
+        );
+        return new NotificationContent(subject, body);
+    }
 
     public static NotificationContent orderPlacedProvider(OrderPlacedEvent event) {
         String subject = "New Order Received — #" + shortId(event.getOrderId());

@@ -82,8 +82,9 @@ jwt:
 public-endpoints:
   - /api/users/register
   - /api/users/login
-  - /api/menu/**              # ← fixed: was /api/menus/**
+  - /api/menu/provider/**              # ← fixed: was /api/menus/**
   - /api/payments/webhook
+  - /api/providers/**
 
 logging:
   level:
