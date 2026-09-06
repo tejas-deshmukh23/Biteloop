@@ -87,6 +87,10 @@ public-endpoints:
   - /api/providers
   - /api/providers/{id}
 
+protected-endpoints:
+  - /api/providers/register
+  - /api/providers/me
+
 logging:
   level:
     root: INFO

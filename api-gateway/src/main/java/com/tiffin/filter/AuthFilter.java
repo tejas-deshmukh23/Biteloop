@@ -35,6 +35,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
 
     private final JwtUtil jwtUtil;
     private final List<String> publicEndpoints;
+    private final List<String> protectedEndpoints;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     public AuthFilter(JwtUtil jwtUtil,
@@ -42,6 +43,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
         super(Config.class);
         this.jwtUtil = jwtUtil;
         this.publicEndpoints = publicEndpointsProperties.getPublicEndpoints();
+        this.protectedEndpoints = publicEndpointsProperties.getProtectedEndpoints();
     }
 
     @Override
@@ -55,10 +57,14 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 return unauthorized(exchange, "Access denied");
             }
 
+            System.out.println("Before public endpoint check");
+            
             // Step 1 — Check if this is a public endpoint
             if (isPublicEndpoint(path)) {
                 return chain.filter(exchange); // skip auth entirely
             }
+            
+            System.out.println("After public endpoint check");
 
             // Step 2 — Extract Authorization header
             String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -122,6 +128,11 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
     // ── Helpers ────────────────────────────────────────────────
 
     private boolean isPublicEndpoint(String path) {
+    	// Explicit protected routes always win, even if a broader public pattern
+        // (like /api/providers/{id}) would otherwise match them
+        if (protectedEndpoints.stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
+            return false;
+        }
         return publicEndpoints.stream()
                 .anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
