@@ -87,6 +87,7 @@ public-endpoints:
   - /api/providers
   - /api/providers/{id}
 
+# adding this protected endpoints only for the enpoints which are getting confused between /{id} and normal route
 protected-endpoints:
   - /api/providers/register
   - /api/providers/me
