@@ -16,7 +16,7 @@ graph TB
         AS[admin-service :8087]
     end
 
-    NS[notification-service<br/>Kafka consumer only, no port]
+    NS[notification-service - Kafka consumer only]
 
     Client -->|REST| GW
     GW --> US
@@ -27,13 +27,13 @@ graph TB
     GW --> PAY
     GW --> AS
 
-    US -.user.registered.-> NS
-    PS -.meal.ready.-> NS
-    OS -.order.placed.-> NS
-    OS -.order.placed.-> PS
-    OS -.order.status.updated.-> NS
-    SUB -.subscription.created.-> NS
-    PAY -.payment.confirmed.-> OS
+    US -.->|user.registered| NS
+    PS -.->|meal.ready| NS
+    OS -.->|order.placed| NS
+    OS -.->|order.placed| PS
+    OS -.->|order.status.updated| NS
+    SUB -.->|subscription.created| NS
+    PAY -.->|payment.confirmed| OS
 
     US --> DB1[(tiffin_users)]
     PS --> DB2[(tiffin_providers)]
