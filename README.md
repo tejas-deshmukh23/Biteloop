@@ -1,5 +1,49 @@
 # Tiffin Platform — Microservices
 
+```
+graph TB
+    Client[Client / Next.js BFF]
+
+    GW[api-gateway :8080]
+
+    subgraph Services
+        US[user-service :8081]
+        PS[provider-service :8082]
+        MS[menu-service :8083]
+        OS[order-service :8084]
+        SUB[subscription-service :8085]
+        PAY[payment-service :8086]
+        AS[admin-service :8087]
+    end
+
+    NS[notification-service<br/>Kafka consumer only, no port]
+
+    Client -->|REST| GW
+    GW --> US
+    GW --> PS
+    GW --> MS
+    GW --> OS
+    GW --> SUB
+    GW --> PAY
+    GW --> AS
+
+    US -.user.registered.-> NS
+    PS -.meal.ready.-> NS
+    OS -.order.placed.-> NS
+    OS -.order.placed.-> PS
+    OS -.order.status.updated.-> NS
+    SUB -.subscription.created.-> NS
+    PAY -.payment.confirmed.-> OS
+
+    US --> DB1[(tiffin_users)]
+    PS --> DB2[(tiffin_providers)]
+    MS --> DB3[(tiffin_menus)]
+    OS --> DB4[(tiffin_orders)]
+    SUB --> DB5[(tiffin_subscriptions)]
+    PAY --> DB6[(tiffin_payments)]
+    AS --> DB7[(tiffin_admin)]
+```
+
 ## Project Structure
 
 ```
