@@ -1,6 +1,6 @@
 # Tiffin Platform — Microservices
 
-```
+```mermaid
 graph TB
     Client[Client / Next.js BFF]
 
